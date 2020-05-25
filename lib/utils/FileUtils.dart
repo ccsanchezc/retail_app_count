@@ -30,17 +30,23 @@ class FileUtils {
   static Future<String> readFromFile() async {
     List<String> allowd = new List<String>();
     allowd.add("txt");
-    try {
-      //final file = await getFile;
-      final file =
-          await FilePicker.getFile(type: FileType.custom, allowedExtensions: allowd );
-      String fileContents = await file.readAsString();
+    if (PermissionsService().requestStoragePermission() != false) {
+      try {
+        //final file = await getFile;
+        final file =
+        await FilePicker.getFile(type: FileType.custom, allowedExtensions: allowd );
+        String fileContents = await file.readAsString();
 
-      //  print(fileContents);
-      return fileContents;
-    } catch (e) {
-      return "";
+        //  print(fileContents);
+        return fileContents;
+      } catch (e) {
+        return e.toString()+"";
+      }
+
+    }else{
+      return "error";
     }
+
   }
 
   static Future<String> downloadFile() async {

@@ -1,11 +1,8 @@
 import 'dart:io';
-//import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:retailappcount/models/masterdata.dart';
-import 'package:retailappcount/models/zonasdb.dart';
 import 'package:sqflite/sql.dart';
 import 'package:sqflite/sqlite_api.dart';
 
@@ -45,6 +42,10 @@ class DatabaseProvider {
           "canti_count int,"
           "date TEXT,"
           "PRIMARY KEY (zona, material)) ");
+      await db.execute(" CREATE UNIQUE INDEX idx_mate_matetial " +
+          "ON Material(material,bar_code)");
+     //await db.execute(" CREATE UNIQUE INDEX idx_mate_barcode " +
+         // "ON Material (bar_code)");
     });
   }
 
@@ -88,15 +89,29 @@ class DatabaseProvider {
     //var table = await db.rawQuery("SELECT MAX(material)+1 as material FROM Material");
     //int id = table.first["material"];
     // material.material = id;
-    var raw = await db.insert(
+    final batch = db.batch();
+
+    var raw = await batch.insert(
       "Material",
       material.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-
+      await batch.commit(noResult: true);
     return raw;
   }
 
+  addMaterialToDatabaseBatch(List<Material_data> material) async {
+    final db = await database;
+    db.transaction((txn) async {
+      Batch batch = txn.batch();
+      for (var rows in material) {
+
+        batch.insert('Material', rows.toMap() , conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+      batch.commit();
+    });
+    //return raw;
+  }
   //Delete
   //Delete client with id
   deleteMaterialWithId(int id) async {

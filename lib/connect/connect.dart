@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:retailappcount/models/masterdata.dart';
-import 'package:retailappcount/db/database.dart';
 class connect {
   static Future<List<Material_data>> CallOdata(String user, String pass) async {
 
@@ -13,8 +12,8 @@ class connect {
       '\$format': 'json',
     };
     String basicAuth =
-         'Basic ' + base64Encode(utf8.encode('$user:$pass'));
-       // 'Basic ' + base64Encode(utf8.encode('CON_ABAP2:Ronny1033801286****'));
+       'Basic ' + base64Encode(utf8.encode('$user:$pass'));
+     //'Basic ' + base64Encode(utf8.encode('CON_ABAP2:Ronny1033801286****'));
 
 
     var uri = Uri.http('fdseccdev.fueradeserie.com.co:8004',
@@ -31,7 +30,7 @@ class connect {
       TopTenUsersModelResponse value = new TopTenUsersModelResponse();
       value = TopTenUsersModelResponse.fromJson(jsonResponse3);
       final List<Material_data> list = value.list;
-
+     // print("YA LO HICE ");
       return list;
     } else {
       print('Request failed with status: ${response.statusCode}.');

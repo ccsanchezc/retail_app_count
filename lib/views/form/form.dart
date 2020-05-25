@@ -142,18 +142,21 @@ class FormPageState extends State<FormPage> {
               labelText: 'Material',
             ),
             controller: this.material,
-            onChanged: (value) {
-              if (value.length > 0) {
+            onChanged: (value) async{
+              if (value.length > 7) {
                 value = value.toString().padLeft(18, '0');
-                var promise = DatabaseProvider.db.getMaterialWithId(value);
-
-                promise.then((res) {
-                  this.materialinfo = res;
-                  _updatecontroller();
-                }).catchError((onError) {
-                  _clearcontroller();
-                  print('Caught $onError'); // Handle the error.
+                var promise = await DatabaseProvider.db.getMaterialWithId(value);
+                setState(() async{
+                  this.materialinfo = promise;
+                  await _updatecontroller();
                 });
+            //    promise.then((res) async {
+             //     this.materialinfo = res;
+             //    await _updatecontroller();
+             //   }).catchError((onError) {
+              //    _clearcontroller();
+                //  print('Caught $onError'); // Handle the error.
+               // });
               }
             },
             validator: (value) => value.isEmpty ? 'Material requerido' : null,
@@ -222,11 +225,11 @@ class FormPageState extends State<FormPage> {
   }
 
   void _clearcontroller() {
-    //this.material.text  = "";
+    this.material.text  = "";
     this.name.text = "";
     this.color.text = "";
     this.talla.text = "";
-    //this.bar_code.text = "";
+    this.bar_code.text = "";
     this.depto.text = "";
     this.mvgr1.text = "";
     this.cantidad.text = "";

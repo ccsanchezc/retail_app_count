@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:retailappcount/IteratorMaterialData/IteratorMatData.dart';
 import 'package:retailappcount/models/masterdata.dart';
 import 'package:retailappcount/utils/FileUtils.dart';
 import 'package:retailappcount/db/database.dart';
@@ -127,23 +128,35 @@ class FileManagerPageState extends State<FileManagerPage>  with SingleTickerProv
                   onPressed: () async {
                     if (_key.currentState.validate()) {
                       _key.currentState.save();
-                       var value = await connect.CallOdata(_correo,_contrasena);
-                       if(value != null){
+                       //var value = await connect.CallOdata(_correo,_contrasena);
+                       IteratorMatData value = new IteratorMatData(await connect.CallOdata(_correo,_contrasena));
+                       if(value.list != null){
 
-                         setState(() {
+                         DatabaseProvider.db.deleteAllMaterial();
+                         setState(() async {
                            print ("entre");
-                           DatabaseProvider.db.deleteAllMaterial();
-                           for(int i= 0; i< value.length ;i++) {
-                             DatabaseProvider.db.addMaterialToDatabase(
-                                 value[i]);
-                           }
-                           var valor = value.length;
+                           value.calculate();
+
+                          await DatabaseProvider.db.addMaterialToDatabaseBatch(value.list);
+                        //   while(value.hasNext()){
+                          //   DatabaseProvider.db.deleteAllMaterial();
+                             //DatabaseProvider.db.addMaterialToDatabase(value.getNext());
+                         //    DatabaseProvider.db.addMaterialToDatabaseBatch(value.list);
+                         //  }
+                          // DatabaseProvider.db.deleteAllMaterial();
+                          // for(int i= 0; i< value.length ;i++) {
+                            // DatabaseProvider.db.addMaterialToDatabase(
+                             //    value[i]);
+                           //}
+
+                           var valor = value.posi;
+                           var uni   = value.unida;
                            showDialog(
                                context: context,
                                builder: (BuildContext context) {
                                  return AlertDialog(
                                    title: Text("Alerta"),
-                                   content: Text("Se cargaron $valor, registros"),
+                                   content: Text("Se cargaron $valor, registros con $uni unidades"),
                                    actions: <Widget>[
                                      new FlatButton(
                                          child: new Text("Cerrar"),

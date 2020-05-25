@@ -1,3 +1,5 @@
+//import 'dart:html';
+
 class Material_data {
   var material;
   String name;
@@ -31,7 +33,7 @@ class Material_data {
 
   //To insert the data in the bd, we need to convert it into a Map
   //Para insertar los datos en la bd, necesitamos convertirlo en un Map
-  Map<String, dynamic> toMap() =>
+    Map<String, dynamic> toMap() =>
       {
         "material": material,
         "name": name,
@@ -70,6 +72,18 @@ class Material_data {
         depto =json["Depto"];
         mvgr1 = json["Mvgr1"];
         cantidad = json["Cantidad"];
+
+       cantidad = cantidad.replaceAll(new RegExp(r"\s+\b|\b\s"), "");
+        if(cantidad == '000') {
+          cantidad = '0';
+        }
+        if(cantidad == 'UNO') {
+          cantidad = '1';
+        }
+        if(cantidad == 'D') {
+          cantidad = '10';
+        }
+      //  print("$material y $cantidad");
      // );
 }
 }
