@@ -228,6 +228,10 @@ class HomePageState extends State<HomePage> {
           hintText: '¿Como se llamará la zona?',
           labelText: 'Nombre de Zona',
         ),
+          textCapitalization: TextCapitalization.characters,
+        onChanged: (value) {
+          value.toUpperCase();
+        },
         validator: (value) {
           if (value.isEmpty) {
             return 'Please enter some text';

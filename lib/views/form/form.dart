@@ -31,8 +31,8 @@ class FormPageState extends State<FormPage> {
   FormPageState(this.namezone);
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  List<String> _colors = <String>['', 'red', 'green', 'blue', 'orange'];
-  String _color = '';
+  String barcodeaux;
+  bool _sumbit;
   var _selectedOption = "1";
   var _options = [
     "1",
@@ -121,14 +121,43 @@ class FormPageState extends State<FormPage> {
             controller: this.bar_code,
             autofocus: true,
             onChanged: (value)  async{
-              if (value.length > 0) {
+              if (value.length > 7) {
+                if(barcodeaux != null) {
+                  final startIndex = value.indexOf(barcodeaux);
+                  if (startIndex == 0) {
+                    final longitud = barcodeaux.length;
+                    value = (value.substring(longitud, value.length));
+                  } else {
+                    value = (value.substring(0, barcodeaux.length));
+                  }
+                  if(barcodeaux.length  == value.length && barcodeaux != value && _sumbit){
+                    print("voy a enviar");
+                    _submitForm();
+                    _sumbit = false;
+                    this.bar_code.text = "";
+                  }else{
+                    value = barcodeaux ;
+                  }
+                  print("value " +value);
+                  print("barcode " + barcodeaux);
+                }
+                barcodeaux = value;
+                print("value afuera " +value);
+                print("barcode afuera " + barcodeaux);
+                print("voy a consultar con " + value);
                 var promise =
                     await DatabaseProvider.db.getMaterialBarCodeWithId(value);
-                setState(() async{
-                  this.materialinfo = promise;
-                  await _updatecontroller();
-                });
-
+                if(promise  != null ) {
+                  _sumbit = true;
+                  print("consulte");
+                  setState(()  {
+                    print("voy a cambiar controlador");
+                    this.materialinfo = promise;
+                     _updatecontroller();
+                  });
+                }else{
+                  _sumbit = false;
+                }
               }
             },
             validator: (value) =>
@@ -150,13 +179,6 @@ class FormPageState extends State<FormPage> {
                   this.materialinfo = promise;
                   await _updatecontroller();
                 });
-            //    promise.then((res) async {
-             //     this.materialinfo = res;
-             //    await _updatecontroller();
-             //   }).catchError((onError) {
-              //    _clearcontroller();
-                //  print('Caught $onError'); // Handle the error.
-               // });
               }
             },
             validator: (value) => value.isEmpty ? 'Material requerido' : null,
@@ -256,7 +278,7 @@ class FormPageState extends State<FormPage> {
     if (!form.validate()) {
       showMessage('Algo fallo!  Por favor revisar y corregir.');
     } else {
-      form.save(); //This invokes each onSaved event
+       form.save(); //This invokes each onSaved event
 
       var now = new DateTime.now();
       String fecha = formatDate(

@@ -113,7 +113,8 @@ class FileManagerPageState extends State<FileManagerPage>  with SingleTickerProv
                     return null;
                   },
                   controller: _passController,
-                  keyboardType: TextInputType.text,
+                 //keyboardType: TextInputType.text,
+                  
                   maxLength: 20,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
@@ -130,27 +131,20 @@ class FileManagerPageState extends State<FileManagerPage>  with SingleTickerProv
                       _key.currentState.save();
                        //var value = await connect.CallOdata(_correo,_contrasena);
                        IteratorMatData value = new IteratorMatData(await connect.CallOdata(_correo,_contrasena));
+
                        if(value.list != null){
 
-                         DatabaseProvider.db.deleteAllMaterial();
-                         setState(() async {
+                         await DatabaseProvider.db.deleteAllMaterial();
+                         await DatabaseProvider.db.addMaterialToDatabaseBatch(value.list);
+
+                         setState(() {
                            print ("entre");
                            value.calculate();
 
-                          await DatabaseProvider.db.addMaterialToDatabaseBatch(value.list);
-                        //   while(value.hasNext()){
-                          //   DatabaseProvider.db.deleteAllMaterial();
-                             //DatabaseProvider.db.addMaterialToDatabase(value.getNext());
-                         //    DatabaseProvider.db.addMaterialToDatabaseBatch(value.list);
-                         //  }
-                          // DatabaseProvider.db.deleteAllMaterial();
-                          // for(int i= 0; i< value.length ;i++) {
-                            // DatabaseProvider.db.addMaterialToDatabase(
-                             //    value[i]);
-                           //}
-
+                           print("voy a imprimir dialogo");
                            var valor = value.posi;
                            var uni   = value.unida;
+
                            showDialog(
                                context: context,
                                builder: (BuildContext context) {

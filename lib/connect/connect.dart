@@ -23,10 +23,9 @@ class connect {
         .get(uri, headers: {HttpHeaders.authorizationHeader: basicAuth});
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      //var itemCount = jsonResponse['totalItems'];
       final jsonResponse2 = jsonResponse["d"];
       final jsonResponse3 = jsonResponse2["results"];
-
+      print("infomración cargada");
       TopTenUsersModelResponse value = new TopTenUsersModelResponse();
       value = TopTenUsersModelResponse.fromJson(jsonResponse3);
       final List<Material_data> list = value.list;
