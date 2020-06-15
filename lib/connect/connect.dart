@@ -16,7 +16,8 @@ class connect {
      //'Basic ' + base64Encode(utf8.encode('CON_ABAP2:Ronny1033801286****'));
 
 
-    var uri = Uri.http('fdseccdev.fueradeserie.com.co:8004',
+  //  var uri = Uri.http('fdseccdev.fueradeserie.com.co:8004', //dev
+      var uri = Uri.http('fdseccdev.fueradeserie.com.co:8000',
         '/sap/opu/odata/sap/ZMM_APP_001_SRV/InputParamSet', qParams);
 
     var response = await http

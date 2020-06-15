@@ -6,6 +6,7 @@ import 'package:retailappcount/utils/Permissions.dart';
 import 'dart:io';
 
 class FileUtils {
+  static String _name;
   //static Permission permission1 = Permission.WriteExternalStorage;
   static Future<String> get getFilePath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -16,10 +17,11 @@ class FileUtils {
     //final path = await getFilePath;
     // final path = await FilePicker.getFilePath(type: FileType.ANY);
     final path = await downloadFile();
-    return File('$path/info.txt');
+    return File('$path/$_name.txt');
   }
 
-  static Future<File> saveToFile(String data) async {
+  static Future<File> saveToFile(String data, String value) async {
+    _name = value;
     final file = await getFile;
     print("entre a descargar");
     print(file.path);

@@ -182,6 +182,16 @@ class DatabaseProvider {
     //print(list);
     return list;
   }
+  Future<List<Zona_Field>> getZonaBarcodeCountZona() async {
+    final db = await database;
+
+    var response = await db.rawQuery(
+        'SELECT zona, bar_code , SUM(canti_count) as canti_count from ZONA GROUP BY zona, bar_code');
+
+    List<Zona_Field> list = response.map((c) => Zona_Field.fromMap(c)).toList();
+   // print(list);
+    return list;
+  }
 
   //Insert
   addZonaToDatabase(Zona_Field material) async {

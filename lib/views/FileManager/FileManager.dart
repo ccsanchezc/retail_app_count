@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:retailappcount/IteratorMaterialData/IteratorMatData.dart';
+import 'package:retailappcount/models/download.dart';
 import 'package:retailappcount/models/masterdata.dart';
 import 'package:retailappcount/utils/FileUtils.dart';
 import 'package:retailappcount/db/database.dart';
@@ -281,32 +282,57 @@ class FileManagerPageState extends State<FileManagerPage>  with SingleTickerProv
     });
   }
 
-  _export() {
+  _export() async {
     print("entre a funcion _export()");
-    final _barcode = DatabaseProvider.db.getZonaBarcodeCount();
+    var promise;
+    List<Download> lista = new List<Download>();
+    int pos = 0;
+   // final _barcode = DatabaseProvider.db.getZonaBarcodeCount();
+    var _barcode =   await DatabaseProvider.db.getZonaBarcodeCountZona();
     String export = "";
-
-    _barcode.then((res) {
-      print("tamaño");
-      print(res.length);
-      for (int i = 0; i < res.length; i++) {
-        if (i == res.length - 1) {
-          export = export +
-              res[i].bar_code +
-              ";" +
-              res[i].canti_count.toString() +
-              '';
-        } else {
-          export = export +
-              res[i].bar_code +
-              ";" +
-              res[i].canti_count.toString() +
-              '\n';
-        }
+    if(_barcode != null){
+      for(var value in _barcode ){
+       // print("Posicion ${pos} ZONA ${value.zona} bar code ${value.bar_code} cantidad  ${value.canti_count}" );
+          if(pos < _barcode.length){
+            int posfuture  =  pos + 1;
+              if(posfuture != _barcode.length){
+                if(value.zona != _barcode[posfuture].zona){
+                  export = export +
+                      value.bar_code.toString() +
+                      "," +
+                      value.canti_count.toString() +
+                      '';
+                //  lista.add(new Download(export, value.zona.toString() ));
+                    await FileUtils.saveToFile(export,value.zona.toString());
+                   export = "";
+                }else{
+                  export = export +
+                      value.bar_code +
+                      "," +
+                      value.canti_count.toString() +
+                      '\n';
+                }
+              }else{
+                export = export +
+                    value.bar_code.toString() +
+                    "," +
+                    value.canti_count.toString() +
+                    '';
+               // lista.add(new Download(export, value.zona.toString() ));
+                 await FileUtils.saveToFile(export,value.zona.toString());
+                export = "";
+              }
+          }
+          pos++;
       }
 
-      final promise = FileUtils.saveToFile(export);
-      promise.then((res) {
+
+    }
+  // for(var list in lista){
+   //  promise = await FileUtils.saveToFile(list.export,list.name);
+ //  }
+     //
+      //promise.then((res) {//
         return showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -315,12 +341,10 @@ class FileManagerPageState extends State<FileManagerPage>  with SingleTickerProv
                 content: Text("Se descargo correctamente el archivo"),
               );
             });
-      }).catchError((onError) {
-        print('Caught $onError'); // Handle the error.
-      });
-    }).catchError((onError) {
-      print('Caught $onError'); // Handle the error.
-    });
+   //   }).catchError((onError) {
+    //    print('Caught $onError'); // Handle the error.
+     // });
+
   }
 
   _format(String valor) {

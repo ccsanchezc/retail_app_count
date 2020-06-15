@@ -121,7 +121,7 @@ class FormPageState extends State<FormPage> {
             controller: this.bar_code,
             autofocus: true,
             onChanged: (value)  async{
-              if (value.length > 7) {
+              if (value.length >= 13) {
                 if(barcodeaux != null) {
                   final startIndex = value.indexOf(barcodeaux);
                   if (startIndex == 0) {
@@ -130,28 +130,25 @@ class FormPageState extends State<FormPage> {
                   } else {
                     value = (value.substring(0, barcodeaux.length));
                   }
-                  if(barcodeaux.length  == value.length && barcodeaux != value && _sumbit){
-                    print("voy a enviar");
+                  if(barcodeaux.length  == value.length  && _sumbit){
+
                     _submitForm();
                     _sumbit = false;
                     this.bar_code.text = "";
                   }else{
                     value = barcodeaux ;
                   }
-                  print("value " +value);
-                  print("barcode " + barcodeaux);
+
                 }
                 barcodeaux = value;
-                print("value afuera " +value);
-                print("barcode afuera " + barcodeaux);
-                print("voy a consultar con " + value);
+                print("voy a buscar");
                 var promise =
                     await DatabaseProvider.db.getMaterialBarCodeWithId(value);
                 if(promise  != null ) {
                   _sumbit = true;
-                  print("consulte");
+
                   setState(()  {
-                    print("voy a cambiar controlador");
+
                     this.materialinfo = promise;
                      _updatecontroller();
                   });
@@ -189,11 +186,24 @@ class FormPageState extends State<FormPage> {
           ),
           new TextFormField(
             decoration: const InputDecoration(
+              icon: const Icon(Icons.equalizer),
+              hintText: 'Cantidad',
+              labelText: 'Cantidad',
+            ),
+            onSaved: (value) {
+              this.materialinfo.cantidad = value;
+            },
+            controller: this.cantidad,
+            keyboardType: TextInputType.number,
+          ),
+          new TextFormField(
+            decoration: const InputDecoration(
               icon: const Icon(Icons.text_fields),
               hintText: 'Nombre del material',
               labelText: 'Nombre del material',
             ),
             controller: this.name,
+            enabled: false,
             validator: (value) =>
                 value.isEmpty ? 'Nombre Material requerido' : null,
             keyboardType: TextInputType.text,
@@ -221,18 +231,6 @@ class FormPageState extends State<FormPage> {
             ),
             controller: this.talla,
             enabled: false,
-            keyboardType: TextInputType.number,
-          ),
-          new TextFormField(
-            decoration: const InputDecoration(
-              icon: const Icon(Icons.equalizer),
-              hintText: 'Cantidad',
-              labelText: 'Cantidad',
-            ),
-            onSaved: (value) {
-              this.materialinfo.cantidad = value;
-            },
-            controller: this.cantidad,
             keyboardType: TextInputType.number,
           ),
           new Container(
@@ -279,7 +277,7 @@ class FormPageState extends State<FormPage> {
       showMessage('Algo fallo!  Por favor revisar y corregir.');
     } else {
        form.save(); //This invokes each onSaved event
-
+  print("Voy a entrar agregar ${this.materialinfo.bar_code} y ${this.materialinfo.cantidad} ");
       var now = new DateTime.now();
       String fecha = formatDate(
           DateTime(now.year, now.month, now.day), [yyyy, '-', mm, '-', dd]);
