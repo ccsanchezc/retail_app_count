@@ -128,6 +128,7 @@ final List<String> Zona_Fild_Model = [
 ];
 
 class Zona_Field {
+  int id;
   var zona;
   String material;
   String bar_code;
@@ -145,6 +146,7 @@ class Zona_Field {
   //To insert the data in the bd, we need to convert it into a Map
   //Para insertar los datos en la bd, necesitamos convertirlo en un Map
   Map<String, dynamic> toMap() => {
+        "id": id,
         "zona": zona,
         "material": material,
         "bar_code": bar_code,

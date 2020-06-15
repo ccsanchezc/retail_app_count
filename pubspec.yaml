@@ -26,7 +26,7 @@ dependencies:
   english_words: ^3.1.0
   date_format: ^1.0.8
   sqflite: ^1.1.5
-  path_provider: ^0.5.0+1
+  path_provider: ^1.6.10
   file_picker: ^1.4.3+2 #NEED for read txt from any
   permission_handler: ^4.4.0
   flutter_speed_dial: ^1.2.5
@@ -34,6 +34,8 @@ dependencies:
   flutter_staggered_grid_view: ^0.3.0
   http: ^0.12.1
   dcdg: ^2.0.1
+  audioplayers: ^0.15.1
+  #assets_audio_player: ^2.0.4+2
 
 dev_dependencies:
   flutter_test:
@@ -47,6 +49,8 @@ dev_dependencies:
 flutter:
   assets:
     - lib/assets/images/logo.png
+    - lib/assets/sound/
+    - assets/sound/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

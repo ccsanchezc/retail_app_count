@@ -1,5 +1,6 @@
 import 'dart:math';
 
+//import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:retailappcount/models/masterdata.dart';
 import 'package:flutter/material.dart';
 import 'package:retailappcount/utils/colors.dart';
@@ -7,6 +8,8 @@ import 'package:retailappcount/models/masterdata.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/services.dart';
 import 'package:retailappcount/db/database.dart';
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class FormPage extends StatefulWidget {
   String namezone;
@@ -120,6 +123,10 @@ class FormPageState extends State<FormPage> {
             ),
             controller: this.bar_code,
             autofocus: true,
+            onFieldSubmitted: (value){
+              print("entre");
+              _submitForm();
+            },
             onChanged: (value)  async{
               if (value.length >= 13) {
                 if(barcodeaux != null) {
@@ -274,10 +281,11 @@ class FormPageState extends State<FormPage> {
     final FormState form = _formKey.currentState;
 
     if (!form.validate()) {
+      playLocalAsset();
       showMessage('Algo fallo!  Por favor revisar y corregir.');
     } else {
        form.save(); //This invokes each onSaved event
-  print("Voy a entrar agregar ${this.materialinfo.bar_code} y ${this.materialinfo.cantidad} ");
+ // print("Voy a entrar agregar ${this.materialinfo.bar_code} y ${this.materialinfo.cantidad} ");
       var now = new DateTime.now();
       String fecha = formatDate(
           DateTime(now.year, now.month, now.day), [yyyy, '-', mm, '-', dd]);
@@ -299,5 +307,10 @@ class FormPageState extends State<FormPage> {
   void showMessage(String message, [MaterialColor color = Colors.red]) {
     _scaffoldKey.currentState.showSnackBar(
         new SnackBar(backgroundColor: color, content: new Text(message)));
+  }
+
+  playLocalAsset()  {
+    AudioCache audioCache = AudioCache(prefix: 'sound/');
+    audioCache.play('crash.mp3' , mode: PlayerMode.LOW_LATENCY);
   }
 }

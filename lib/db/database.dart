@@ -35,13 +35,14 @@ class DatabaseProvider {
           "mvgr1 TEXT,"
           "cantidad TEXT)  ");
       await db.execute("CREATE TABLE Zona ("
+          "id integer ,"
           "zona varchar(18)  ,"
           "material varchar(18)   ,"
           "bar_code TEXT,"
           "name TEXT,"
           "canti_count int,"
           "date TEXT,"
-          "PRIMARY KEY (zona, material)) ");
+          "PRIMARY KEY ( id  , zona, material) ) ");
       await db.execute(" CREATE UNIQUE INDEX idx_mate_matetial " +
           "ON Material(material,bar_code)");
      //await db.execute(" CREATE UNIQUE INDEX idx_mate_barcode " +
@@ -141,6 +142,7 @@ class DatabaseProvider {
 
     var response = await db.rawQuery(
         'SELECT zona,date, SUM(canti_count) as canti_count from ZONA GROUP BY zona,date');
+       // 'SELECT zona,date,canti_count from ZONA GROUP BY zona,date');
     List<Zona_Field> list = response.map((c) => Zona_Field.fromMap(c)).toList();
 
     return list;
@@ -194,7 +196,7 @@ class DatabaseProvider {
   }
 
   //Insert
-  addZonaToDatabase(Zona_Field material) async {
+ /* addZonaToDatabase(Zona_Field material) async {
     final db = await database;
 
     var promise =
@@ -221,8 +223,32 @@ class DatabaseProvider {
     }).catchError((onError) {
       print('Caught $onError'); // Handle the error.
     });
-  }
+  }*/
+  addZonaToDatabase(Zona_Field material) async {
+    final db = await database;
+    var table = await db.rawQuery("SELECT MAX(id)+1 as id FROM ZONA");
+    int id = table.first["id"];
+    material.id = id;
 
+    var promise =
+    getZonaWithIdMaterial("" + material.zona, "" + material.material);
+    promise.then((res) {
+      print("agregando");
+
+
+        print("nuevo");
+
+        var raw = db.insert(
+          "Zona",
+          material.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+        return raw;
+
+    }).catchError((onError) {
+      print('Caught $onError'); // Handle the error.
+    });
+  }
   //Delete
   //Delete client with id
   deleteZonaWithId(var id) async {

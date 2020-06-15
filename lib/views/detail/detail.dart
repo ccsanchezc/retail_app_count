@@ -73,8 +73,30 @@ class DetailPageState extends State<DetailPage> {
               itemBuilder: (BuildContext context, int index) {
                 Zona_Field item = snapshot.data[index];
                 //delete one register for id
+
                 return Dismissible(
                   key: UniqueKey(),
+                  confirmDismiss: (DismissDirection direction) async {
+                    return await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text("Confirmación"),
+                          content: const Text("¿Está seguro que desea eliminar este item?"),
+                          actions: <Widget>[
+                            FlatButton(
+                                onPressed: () => Navigator.of(context).pop(true),
+                                child: const Text("Eliminar")
+                            ),
+                            FlatButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: const Text("Cancelar"),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
                   background: Container(color: Colors.red),
                   onDismissed: (diretion) {
                     DatabaseProvider.db.deleteZonaWithIdMat(
@@ -87,7 +109,7 @@ class DetailPageState extends State<DetailPage> {
                       child: ListTile(
                        // onTap: ,
                         title: Text(item.name),
-                        subtitle: Text(item.material),
+                        subtitle: Text(item.material +"/" +  item.bar_code),
                         leading: CircleAvatar(
                             child: Text(item.canti_count.toString())),
                         //If we press one of the cards, it takes us to the page to edit, with the data onTap:
